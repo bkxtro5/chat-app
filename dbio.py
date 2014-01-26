@@ -1,6 +1,6 @@
 # File: dbio.py
 # Chat database reader/writer.
-# Version: 1.0
+# Version: 1.1
 
 import sqlite3
 import pylogger
@@ -37,7 +37,7 @@ def writeToDatabase(user, message):
 	conn.commit()
 	pylogger.logEvent("debug", "--Exit writeToDatabase")
 	
-def readFromDatabase(requestType):
+def readFromDatabase(requestType, *args):
 	pylogger.logEvent("debug", "++Enter readFromDatabase")
 	conn = sqlite3.connect(databasePath)
 	c = conn.cursor()
@@ -47,6 +47,11 @@ def readFromDatabase(requestType):
 			c.execute('select * from chatSlate order by messageId limit 50')
 		elif requestType == "allRows":
 			c.execute('select * from chatSlate')
+		elif requestType == "lastMessageFromUser":
+			for ar in args:
+				theUser = ar
+			query = "select * from chatSlate where userName = '" + theUser + "' order by messageId desc limit 1"
+			c.execute(query)
 		else:
 			pylogger.logEvent("error", "Did not understand requestType.")
 	except:
