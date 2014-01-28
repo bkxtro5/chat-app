@@ -1,12 +1,12 @@
 # File: pylogger.py
 # Basic, reusable logging engine for Python 3.3.
-# Version: 1.0
+# Version: 1.1
 
 import time
 from os import path
 import sys
 
-loggingLevel = "debug"
+loggingLevel = "information"
 logFileName = ".\logs\chatapp.log"
 
 dictLogLevel = {"debug":5,"information":4,"warning":3,"error":2,"fatal":1}
@@ -23,7 +23,10 @@ def createLog():
 def getTime():
 	theTime = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
 	return theTime
-
+	
+def getUnixTime():
+	uTime = time.time()
+	return uTime
 
 def logEvent(eventSeverity, eventData):
 	if dictLogLevel[eventSeverity] <= dictLogLevel[loggingLevel]:

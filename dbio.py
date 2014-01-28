@@ -20,7 +20,7 @@ def databaseInitialize():
 		conn = sqlite3.connect(databasePath)
 		conn.commit()
 		c = conn.cursor()
-		c.execute('''create table chatSlate(messageId, timeStamp, userName, message)''')
+		c.execute('''create table chatSlate(messageId, unixTime, timeStamp, userName, message)''')
 		conn.commit()
 		pylogger.logEvent("information", "Database successfully created.")
 	pylogger.logEvent("debug", "--Exit database Initialize")
@@ -28,13 +28,17 @@ def databaseInitialize():
 
 def writeToDatabase(user, message):
 	pylogger.logEvent("debug", "++Enter writeToDatabase")
-	databaseInitialize()
-	conn = sqlite3.connect(databasePath)
-	c = conn.cursor()
-	pylogger.logEvent("debug", "Writing a message to database.")
-	chatTuple = (columnCount(), pylogger.getTime(), user, message)
-	c.execute('insert into chatSlate values (?,?,?,?)', (chatTuple),)
-	conn.commit()
+	try:
+		databaseInitialize()
+		conn = sqlite3.connect(databasePath)
+		c = conn.cursor()
+		pylogger.logEvent("debug", "Writing a message to database.")
+		chatTuple = (columnCount(), pylogger.getUnixTime(), pylogger.getTime(), user, message)
+		c.execute('insert into chatSlate values (?,?,?,?,?)', (chatTuple),)
+		conn.commit()
+	except:
+		err = "An error occurred during save. " + str(sys.exc_info()[0])
+		pylogger.logEvent("error", err)
 	pylogger.logEvent("debug", "--Exit writeToDatabase")
 	
 def readFromDatabase(requestType, *args):
