@@ -11,6 +11,7 @@ try:
 	import dbio
 	import verifymessage
 except:
+	print("SUM TING WONG")
 	pageError = True
 
 # ===Configuration===	

@@ -6,7 +6,7 @@ import time
 from os import path
 import sys
 
-loggingLevel = "information"
+loggingLevel = "debug"
 logFileName = ".\logs\chatapp.log"
 
 dictLogLevel = {"debug":5,"information":4,"warning":3,"error":2,"fatal":1}

@@ -1,9 +1,10 @@
 # File: verifymessage.py
 # Validates against duplicate requests before saving message to database.
-# Version 1.0
+# Version 1.1
 
 import dbio
 import pylogger
+import sys
 
 def getLastEntryFromUser(userName):
 	pylogger.logEvent("debug", "++Enter getLastEntryForUser")
@@ -12,9 +13,13 @@ def getLastEntryFromUser(userName):
 	try:
 		lastEntry = dbio.readFromDatabase("lastMessageFromUser", userName)
 		pylogger.logEvent("debug", "Last Entry Found.")
-	except UnboundLocalError:
-		pylogger.logEvent("debug", "No entries found for user.")
+		if len(lastEntry) == 0:
+			lastEntry = " "
+			pylogger.logEvent("debug", "No entries found for user.")
+	except:
+		e = "The following error occurred: " + str(.exc_info()[0])
 		lastEntry = " "
+		pylogger.logEvent("debug", e)
 		pass
 	pylogger.logEvent("debug", "--Exit getLastEntryForUser")
 	return lastEntry
@@ -47,7 +52,7 @@ def checkLastMessage(entry, message):
 
 def validateMessage(userName, message):
 	pylogger.logEvent("debug", "++Enter validateMessage")
-	if getLastEntryFromUser == " ":
+	if getLastEntryFromUser(userName) == " ":
 		pylogger.logEvent("debug", "Message validation passed.")
 		return False
 	elif checkTimeStamp(getLastEntryFromUser(userName)) == False or checkLastMessage(getLastEntryFromUser(userName), message) == False:
