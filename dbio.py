@@ -1,6 +1,6 @@
 # File: dbio.py
 # Chat database reader/writer.
-# Version: 1.1
+# Version: 1.2
 
 import sqlite3
 import pylogger
@@ -62,7 +62,7 @@ def readFromDatabase(requestType, *args):
 		err = "Failed to read database, exception: " + str(sys.exc_info()[0]) 
 		pylogger.logEvent("error", err)
 	pylogger.logEvent("debug", "--Exit readFromDatabase")
-	return c
+	return c.fetchall()
 	
 def columnCount():
 	pylogger.logEvent("debug", "++Enter columnCount")

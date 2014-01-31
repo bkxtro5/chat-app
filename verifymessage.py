@@ -5,24 +5,24 @@
 import dbio
 import pylogger
 import sys
-
+	
 def getLastEntryFromUser(userName):
 	pylogger.logEvent("debug", "++Enter getLastEntryForUser")
-	logMessage = "Looking up user " + userName
+	logMessage = "Looking up user " + str(userName)
 	pylogger.logEvent("debug", logMessage)
 	try:
 		lastEntry = dbio.readFromDatabase("lastMessageFromUser", userName)
-		pylogger.logEvent("debug", "Last Entry Found.")
-		if len(lastEntry) == 0:
+		pylogger.logEvent("debug", "Checking result from database.")
+		if lastEntry == []:
+			pylogger.logEvent("debug", "No entries found for this user.")
 			lastEntry = " "
-			pylogger.logEvent("debug", "No entries found for user.")
-	except:
-		e = "The following error occurred: " + str(.exc_info()[0])
+	except Exception as err:
+		pylogger.logEvent("error", err)
 		lastEntry = " "
-		pylogger.logEvent("debug", e)
 		pass
 	pylogger.logEvent("debug", "--Exit getLastEntryForUser")
 	return lastEntry
+	
 	
 def checkTimeStamp(entry):
 	pylogger.logEvent("debug", "++Enter checkTimeStamp")

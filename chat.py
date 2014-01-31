@@ -1,9 +1,11 @@
 # File: chat.py
 # Core chat application code which build the page, returns it, and handles new messages.
-# Version pre-2.0
+# Version 2.0
 
 # Initializing pageError as False.
 pageError = False
+# Initializing validationFailed as False.
+validationFailed = False
 
 try:
 	import cgi
@@ -11,11 +13,11 @@ try:
 	import dbio
 	import verifymessage
 except:
-	print("SUM TING WONG")
 	pageError = True
 
 # ===Configuration===	
 showDebugPageOnFailure = False
+showValidationErrors = True
 numberOfPastMessages = "topFifty"
 # ===Configuration===
 
@@ -72,6 +74,11 @@ goodPagePartD = """
 </html>
 """
 
+validationResponse = """
+<br>
+<b><font color=red>Message validation failed, not commiting to database.</font></b>
+"""
+
 pylogger.logEvent("debug", "Attempting to get userName and message from GET request.")
 form = cgi.FieldStorage()
 userName = form.getvalue('usr')
@@ -108,6 +115,8 @@ def makeMessages():
 	
 def buildPage():
 	totalPage = goodPagePartA + goodPagePartB + str(makeMessages()) + goodPagePartC + str(userNamePersistance()) + goodPagePartD
+	if showValidationErrors == True and validationFailed == True:
+		totalPage = totalPage + validationResponse
 	return totalPage
 
 if userName is not None and message is not None:
@@ -116,6 +125,7 @@ if userName is not None and message is not None:
 		dbio.writeToDatabase(userName, message)
 	else:
 		pylogger.logEvent("debug", "Validation failed. Not saving to database.")
+		validationFailed = True
 else:
 	pylogger.logEvent("debug", "New page request. Nothing to save to database.")
 	
@@ -126,4 +136,5 @@ elif pageError == True and showDebugPageOnFailure == False:
 	pylogger.logEvent("error", "Building page failed. Returned regular error page to client.")
 	print(regularFailurePage)
 else:
+	pylogger.logEvent("debug", "Responding with regular page.")
 	print(buildPage())
