@@ -2,6 +2,8 @@
 # Core chat application code which build the page, returns it, and handles new messages.
 # Version 2.0
 
+# Application version.
+appVersion = "1.2.1"
 # Initializing pageError as False.
 pageError = False
 # Initializing validationFailed as False.
@@ -74,6 +76,14 @@ goodPagePartD = """
 </html>
 """
 
+goodPagePartE = """
+<br>
+<br>
+<br>
+<font size=1>v. """ + appVersion + """
+</font>
+"""
+
 validationResponse = """
 <br>
 <b><font color=red>Message validation failed, not commiting to database.</font></b>
@@ -101,22 +111,28 @@ def userNamePersistance():
 		
 
 def getContent():
-	pylogger.logEvent("debug", "++Enter getContent")
+	pylogger.logEvent("trace", "++Enter getContent")
 	chats = dbio.readFromDatabase(numberOfPastMessages)
-	pylogger.logEvent("debug", "--Exit getContent")
+	pylogger.logEvent("trace", "--Exit getContent")
 	return chats
 	
 def makeMessages():
+	pylogger.logEvent("trace", "++Enter makeMessages")
+	pylogger.logEvent("debug", "Putting messages together for page.")
 	allMessages = ""
 	for message in getContent():
 		messagePart = str(message[2]) + " - " + str(message[3]) + " - " + str(message[4]) + "\n"
 		allMessages = allMessages + messagePart
+	pylogger.logEvent("trace", "--Exit makeMessages")
 	return allMessages
 	
 def buildPage():
+	pylogger.logEvent("trace", "++Enter buildPage")
 	totalPage = goodPagePartA + goodPagePartB + str(makeMessages()) + goodPagePartC + str(userNamePersistance()) + goodPagePartD
 	if showValidationErrors == True and validationFailed == True:
 		totalPage = totalPage + validationResponse
+	totalPage = totalPage + goodPagePartE
+	pylogger.logEvent("trace", "--Exit buildPage")
 	return totalPage
 
 if userName is not None and message is not None:
@@ -124,7 +140,7 @@ if userName is not None and message is not None:
 		pylogger.logEvent("debug", "Saving message to database.")
 		dbio.writeToDatabase(userName, message)
 	else:
-		pylogger.logEvent("debug", "Validation failed. Not saving to database.")
+		pylogger.logEvent("debug", "Not saving to database.")
 		validationFailed = True
 else:
 	pylogger.logEvent("debug", "New page request. Nothing to save to database.")
@@ -136,5 +152,7 @@ elif pageError == True and showDebugPageOnFailure == False:
 	pylogger.logEvent("error", "Building page failed. Returned regular error page to client.")
 	print(regularFailurePage)
 else:
-	pylogger.logEvent("debug", "Responding with regular page.")
+	pylogger.logEvent("debug", "User is due regular page.")
 	print(buildPage())
+	
+pylogger.logEvent("debug", "Finished building page.")

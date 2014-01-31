@@ -10,7 +10,7 @@ databasePath = ".\db\chat.db"
 
 
 def databaseInitialize():
-	pylogger.logEvent("debug", "++Enter databaseInitialize")
+	pylogger.logEvent("trace", "++Enter databaseInitialize")
 	try:
 		with open(databasePath) as DataBaseCheck: pass
 		conn = sqlite3.connect(databasePath)
@@ -23,11 +23,11 @@ def databaseInitialize():
 		c.execute('''create table chatSlate(messageId, unixTime, timeStamp, userName, message)''')
 		conn.commit()
 		pylogger.logEvent("information", "Database successfully created.")
-	pylogger.logEvent("debug", "--Exit database Initialize")
+	pylogger.logEvent("trace", "--Exit database Initialize")
 	
 
 def writeToDatabase(user, message):
-	pylogger.logEvent("debug", "++Enter writeToDatabase")
+	pylogger.logEvent("trace", "++Enter writeToDatabase")
 	try:
 		databaseInitialize()
 		conn = sqlite3.connect(databasePath)
@@ -39,10 +39,10 @@ def writeToDatabase(user, message):
 	except:
 		err = "An error occurred during save. " + str(sys.exc_info()[0])
 		pylogger.logEvent("error", err)
-	pylogger.logEvent("debug", "--Exit writeToDatabase")
+	pylogger.logEvent("trace", "--Exit writeToDatabase")
 	
 def readFromDatabase(requestType, *args):
-	pylogger.logEvent("debug", "++Enter readFromDatabase")
+	pylogger.logEvent("trace", "++Enter readFromDatabase")
 	conn = sqlite3.connect(databasePath)
 	c = conn.cursor()
 	pylogger.logEvent("debug", "Reading from database.")
@@ -61,21 +61,22 @@ def readFromDatabase(requestType, *args):
 	except:
 		err = "Failed to read database, exception: " + str(sys.exc_info()[0]) 
 		pylogger.logEvent("error", err)
-	pylogger.logEvent("debug", "--Exit readFromDatabase")
+	pylogger.logEvent("trace", "--Exit readFromDatabase")
 	return c.fetchall()
 	
 def columnCount():
-	pylogger.logEvent("debug", "++Enter columnCount")
+	pylogger.logEvent("trace", "++Enter columnCount")
 	count = 1
 	pylogger.logEvent("debug", "Getting column count.")
 	rows = readFromDatabase("allRows")
 	for eachMessage in rows:
 		count = count + 1
+	pylogger.logEvent("trace", "--Exit columnCount")
 	return count
 	
 
 def test():
-	pylogger.logEvent("debug", "++Enter dbio tests")
+	pylogger.logEvent("trace", "++Enter dbio tests")
 	print("1. Database creation.")
 	databaseInitialize()
 	print("2. Database confirm.")
@@ -89,6 +90,6 @@ def test():
 	print("Do you see messages above?")
 	print("Tests complete.")
 	print("Check logs to confirm logging is working.")
-	pylogger.logEvent("debug", "--Exit dbio tests")
+	pylogger.logEvent("trace", "--Exit dbio tests")
 
 #test()

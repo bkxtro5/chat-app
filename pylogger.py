@@ -1,6 +1,6 @@
 # File: pylogger.py
 # Basic, reusable logging engine for Python 3.3.
-# Version: 1.1
+# Version: 1.2
 
 import time
 from os import path
@@ -9,7 +9,7 @@ import sys
 loggingLevel = "debug"
 logFileName = ".\logs\chatapp.log"
 
-dictLogLevel = {"debug":5,"information":4,"warning":3,"error":2,"fatal":1}
+dictLogLevel = {"trace":6,"debug":5,"information":4,"warning":3,"error":2,"fatal":1}
 
 def createLog():
 	if path.isfile(logFileName) == True:
